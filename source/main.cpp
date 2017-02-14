@@ -1,4 +1,4 @@
-#include <iostream> 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
@@ -13,20 +13,23 @@
 #include "../lib/headers/cmessagebox.h"
 //#include "../headers/cglyphtext.h" not needed for now
 
-sf::RenderWindow* mainwindow;
-sd::Button b;
-sd::Slide sl;
-sd::Slide sl2;
+sf::RenderWindow* mainwindow; //main window of the program
+sd::Button b; //quit button
+sd::Slide sl; //volume slide
+sd::Slide sl2; //pitch slide
 sf::Font fontsans;
 sf::Music music1;
 
+//array of pointers for each control from sfsd
 std::vector<sd::Control*> controls;
 
 std::vector< std::vector<char> > map;
 
 void Init()
 {
+	//init global vars (button solors for now)
 	sd::Global::Init();
+
 	for (int i = 0; i < 15; i++)
 	{
 		map.push_back(std::vector<char>());
@@ -41,7 +44,7 @@ void Init()
 		map.at(i).push_back('#');
 	}
 	
-	//init main window pointer so no empty init needed
+	//init main window
 	mainwindow = new sf::RenderWindow(sf::VideoMode(640, 480), "Test", sf::Style::Close | sf::Style::Titlebar);
 	mainwindow->setVerticalSyncEnabled(true);
 	
@@ -49,6 +52,7 @@ void Init()
 	fontsans = sd::Global::Font;
 	
 	//init static variables
+	//TODO: include some resources into lib source
 	sd::Button::SetBasePicture( sd::Picture("button.png", sf::Vector2f(-1, -1), true) );
 	sd::Button::SetBaseFont( fontsans );
 	sd::MessageBox::SetBaseButtonPicture( sd::Picture("button.png", sf::Vector2f(-1, -1), true) );
@@ -57,49 +61,64 @@ void Init()
 	sd::Slide::SetBaseButtonPicture( sd::Picture("slidebutton.png", sf::Vector2f(-1, -1), false) );
 }
 
+//when closing program
 void Uninit()
 {
 	delete mainwindow;
 }
 
+//keyboard test
 void KeyTest()
 {
 
 }
 
+//mouse test, call .PressedTest(mouse) for each control
 sd::Action MousePressedTest(sf::Vector2f mouse)
 {
+	//check if any pressed
 	for (unsigned int i = 0; i < controls.size(); i++)
 		controls.at(i)->PressedTest(mouse);
 	return sd::ActionEmpty;
 }
 
+//call .DownTest(mouse) for each control
 sd::Action MouseTest(sf::Vector2f mouse)
 {
+	//check except slide
 	for (unsigned int i = 0; i < controls.size(); i++)
-		if (controls.at(i)->GetType() == sd::button)
+		if (controls.at(i)->GetType() != sd::slide) //TODO: sd::slide -> sd::Control::Slide?
 			controls.at(i)->DownTest(mouse);
-	
+
+	//move slides if pressed
 	if (sl.DownTest(mouse))
 		music1.setVolume(sl.GetValue());
 	if (sl2.DownTest(mouse))
-		music1.setPitch(((float)sl2.GetValue()) / 100);
+	{
+		music1.setPitch(((float)sl2.GetValue()) / 2 + 0.5);
+		sl2.SetValue((music1.getPitch() - 0.5) * 2);
+	}
 	
 	return sd::ActionEmpty;
 }
 
+//call .ReleaseTest(mouse) for each control
 sd::Action MouseReleasedTest(sf::Vector2f mouse)
 {
 	if (sl.ReleasedTest(mouse))
 		music1.setVolume(sl.GetValue());
 	if (sl2.ReleasedTest(mouse))
-		music1.setPitch(((float)sl2.GetValue()) / 100);
+	{
+		music1.setPitch(((float)sl2.GetValue()) / 2 + 0.5);
+		sl2.SetValue((music1.getPitch() - 0.5) * 2);
+	}
+	//if button hit - close program
 	if (b.ReleasedTest(mouse))
 		return sd::ActionClose;
 	return sd::ActionEmpty;
 }
 
-
+//test
 void DrawMap()
 {
 	sf::RectangleShape rbg(sf::Vector2f(25, 25));
@@ -139,6 +158,11 @@ void DrawMap()
 	}
 }
 
+void DrawHud()
+{
+	for (unsigned int i = 0; i < controls.size(); i++)
+		controls.at(i)->Draw(*mainwindow);
+}
 
 int main()
 {
@@ -159,8 +183,8 @@ int main()
 	sd::AskMessageBox mb("Quit?", "Really close?", mainwindow);
 	sl = sd::Slide(sf::Vector2f(25, window.getSize().y - 75), sf::Vector2f(200, 20), 0, 100);
 	sl.SetValue(music1.getVolume());
-	sl2 = sd::Slide(sf::Vector2f(25, window.getSize().y - 100), sf::Vector2f(200, 20), 0, 300);
-	sl2.SetValue(music1.getPitch() * 100);
+	sl2 = sd::Slide(sf::Vector2f(25, window.getSize().y - 100), sf::Vector2f(200, 20), 0, 5);
+	sl2.SetValue((music1.getPitch() - 0.5) * 2);
 	
 	controls.push_back((sd::Control*)(&b));
 	controls.push_back((sd::Control*)(&sl));
@@ -180,17 +204,23 @@ int main()
 	//float r = 50;
 	float frametime = 0;
 	music1.play();
+
+	//main loop
 	while (window.isOpen())
 	{
+		//get mouse position
 		sf::Vector2i mousewindowpos = sf::Mouse::getPosition(window);
 		sf::Vector2f mouseglobalpos = window.mapPixelToCoords(mousewindowpos);
-		
+
+		//parse events
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			//Alt+f4 and etc.
 			if (event.type == sf::Event::Closed)
 				window.close();
-			
+
+			//esc or 'q' //TODO: move down to keyhit
 			if ((event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) || 
 			(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Q))
 				if (mb.Show() == sd::AskMessageBox::ResultOK)
@@ -220,7 +250,7 @@ int main()
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			MouseTest(mouseglobalpos);
 
-
+		//example code
 		///////////////////////////////////////////Управление персонажем с анимацией////////////////////////////////////////////////////////////////////////
 		/*if ((Keyboard::isKeyPressed(Keyboard::Left) || (Keyboard::isKeyPressed(Keyboard::A)))) {
 			p.dir = 1; p.speed = 1;//dir =1 - направление вверх, speed =0.1 - скорость движения. Заметьте - время мы уже здесь ни на что не умножаем и нигде не используем каждый раз
@@ -252,18 +282,25 @@ int main()
 		
 		}*/
 		
+		//clear screen with gray color //TODO: add this color to Global
 		window.clear(sf::Color(170,170,170));
+
+		//draw window
 		DrawMap();
-		for (unsigned int i = 0; i < controls.size(); i++)
-			controls.at(i)->Draw(window);
+		DrawHud();
+
+		//moved to DrawHud
 		/*b.Draw(window);
 		sl.Draw(window);
 		sl2.Draw(window);*/
 		//b.SetPosition(b.GetPosition() + sf::Vector2f(0.5, 0.5));
 		//sf::Vector2f t = b.GetSize();
 		//b.SetSize(t+sf::Vector2f(0.5, 0.5));
+
+		//flip
 		window.display();
 
+		//wait for fps timer (60 frames per second)
 		do
 			frametime = fpstimer.getElapsedTime().asMilliseconds();
 		while (frametime < 1000/60);
