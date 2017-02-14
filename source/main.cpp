@@ -179,6 +179,7 @@ int main()
 	sl.SetValue(music1.getVolume());
 	sl2 = sd::Slide(sf::Vector2f(25, window.getSize().y - 100), sf::Vector2f(200, 20), 0, 5);
 	sl2.SetValue((music1.getPitch() - 0.5) * 2);
+	//b.SetVisible(false);
 	
 	controls.push_back((sd::Control*)(&b));
 	controls.push_back((sd::Control*)(&sl));
@@ -277,7 +278,7 @@ int main()
 		}*/
 		
 		//clear screen with gray color //TODO: add this color to Global
-		window.clear(sf::Color(170,170,170));
+		window.clear(sd::Global::ColorBackground);
 
 		//draw window
 		DrawMap();

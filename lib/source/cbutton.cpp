@@ -13,8 +13,8 @@ sf::Font sd::Button::_basefont;
 void sd::Button::_Init()
 {
 	//no pic = basepic cause one of ctors; so font
-	_pressedcolor = sd::Global::ColorPressed;
-	_disabledcolor = sd::Global::ColorDisabled;
+	_pressedcolor = sd::Global::ColorPressedBase;
+	_disabledcolor = sd::Global::ColorDisabledBase;
 	_disabledtextcolor = sd::Global::ColorDisabledText;
 	
 	//size like that for now
@@ -204,7 +204,7 @@ void sd::Button::Draw(sf::RenderWindow& targetwindow)
 
 bool sd::Button::PressedTest(sf::Vector2f mousepos)
 {
-	if (_enabled)
+	if (_enabled && _visible)
 	{
 		if (mousepos.x >= _PosFixOnGet().x && mousepos.x < _PosFixOnGet().x + GetSize().x
 		&& mousepos.y >= _PosFixOnGet().y && mousepos.y < _PosFixOnGet().y + GetSize().y)
@@ -223,7 +223,7 @@ bool sd::Button::DownTest(sf::Vector2f mousepos)
 {
 	if (_waspressed)
 	{
-		if (_enabled)
+		if (_enabled && _visible)
 		{
 			if (mousepos.x >= _PosFixOnGet().x && mousepos.x < _PosFixOnGet().x + GetSize().x
 			&& mousepos.y >= _PosFixOnGet().y && mousepos.y < _PosFixOnGet().y + GetSize().y)
@@ -259,7 +259,7 @@ bool sd::Button::ReleasedTest(sf::Vector2f mousepos)
 	if (_waspressed)
 	{
 		_waspressed = false;
-		if (_enabled)
+		if (_enabled && _visible)
 		{
 			_bgpic.SetColor(sf::Color::White);
 			if (_state)

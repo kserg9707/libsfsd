@@ -36,7 +36,7 @@ clean:
 			@rm -f $(TARGET) $(TMP)*
 
 installedlib:
-			cd $(LIB) && $(MAKE)
+			@cd $(LIB) && $(MAKE)
 
 #main
 $(TMP)main.o: $(SOURCE)main.cpp #$(ALLHEADERS)

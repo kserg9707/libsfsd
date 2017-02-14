@@ -20,8 +20,8 @@ void sd::Slide::_Init()
 	
 	_PicSet(_basepic);
 	
-	_pressedcolor = sd::Global::ColorPressed;
-	_disabledcolor = sd::Global::ColorDisabled;
+	_pressedcolor = sd::Global::ColorPressedBase;
+	_disabledcolor = sd::Global::ColorDisabledBase;
 
 	SetEnabled(true);
 	SetVisible(true);
@@ -196,7 +196,7 @@ void sd::Slide::Draw(sf::RenderWindow& targetwindow)
 
 bool sd::Slide::PressedTest(sf::Vector2f mousepos)
 {
-	if (_enabled)
+	if (_enabled && _visible)
 	{
 		if (_slidebutton.PressedTest(mousepos))
 		{
@@ -214,7 +214,7 @@ bool sd::Slide::DownTest(sf::Vector2f mousepos)
 {
 	if (_waspressed)
 	{
-		if (_enabled)
+		if (_enabled && _visible)
 		{
 			_slidebutton.DownTest(mousepos);
 			sf::Vector2f newpos = mousepos-_mousedelta;
@@ -242,7 +242,7 @@ bool sd::Slide::ReleasedTest(sf::Vector2f mousepos)
 	if (_waspressed)
 	{
 		_waspressed = false;
-		if (_enabled)
+		if (_enabled && _visible)
 		{
 			_slidebutton.ReleasedTest(mousepos);
 			if (_state)
