@@ -9,11 +9,13 @@ namespace sd
 class Global
 {
 private:
+	static sf::Color _colorbase;
 	static sf::Color _colorpressed;
 	static sf::Color _colordisabled;
 	static sf::Color _colordisabledtext;
 	static sf::Font _font;
 public:
+	static const sf::Color& ColorBase;
 	static const sf::Color& ColorPressed;
 	static const sf::Color& ColorDisabled;
 	static const sf::Color& ColorDisabledText;

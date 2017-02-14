@@ -94,10 +94,7 @@ sd::Action MouseTest(sf::Vector2f mouse)
 	if (sl.DownTest(mouse))
 		music1.setVolume(sl.GetValue());
 	if (sl2.DownTest(mouse))
-	{
 		music1.setPitch(((float)sl2.GetValue()) / 2 + 0.5);
-		sl2.SetValue((music1.getPitch() - 0.5) * 2);
-	}
 	
 	return sd::ActionEmpty;
 }
@@ -108,10 +105,7 @@ sd::Action MouseReleasedTest(sf::Vector2f mouse)
 	if (sl.ReleasedTest(mouse))
 		music1.setVolume(sl.GetValue());
 	if (sl2.ReleasedTest(mouse))
-	{
 		music1.setPitch(((float)sl2.GetValue()) / 2 + 0.5);
-		sl2.SetValue((music1.getPitch() - 0.5) * 2);
-	}
 	//if button hit - close program
 	if (b.ReleasedTest(mouse))
 		return sd::ActionClose;

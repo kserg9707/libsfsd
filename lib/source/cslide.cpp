@@ -13,6 +13,7 @@ sd::Picture sd::Slide::_basepic;
 sd::Picture sd::Slide::_basebuttonpic;
 
 
+//init new object
 void sd::Slide::_Init()
 {
 	_value = 0;
@@ -29,6 +30,7 @@ void sd::Slide::_Init()
 	_state = false;
 }
 
+//set rail (background) picture
 void sd::Slide::_PicSet(const sd::Picture pic)
 {
 	_bgpic = pic;
@@ -36,20 +38,25 @@ void sd::Slide::_PicSet(const sd::Picture pic)
 	_bgpic.SetOrigin(0, (int)(_bgpic.GetLocalSize().y / 2));
 }
 
+//set control position
 void sd::Slide::_PosSet(sf::Vector2f pos)
 {
 	_pos = pos;
 	_slidebutton.SetPosition(_pos);
 }
 
+//if value delta << slide size.x, round button position to nearest value
 void sd::Slide::_UpdateValue()
 {
 	if (_size.x == 0)
 		return;
 	
 	_value = round(((float)_slidebutton.GetPosition().x - _pos.x) / (_size.x - _slidebutton.GetSize().x) * (_valuemax - _valuemin) + _valuemin);
+	//update button so it shows real value, not between
+	_UpdateButton();
 }
 
+//place button according to value
 void sd::Slide::_UpdateButton()
 {
 	if (_size.x == 0)
@@ -115,13 +122,13 @@ sd::Slide& sd::Slide::operator = (const sd::Slide& src)
 }
 
 
-//init static vars. New vars applies to objects creted after setting it
+//init static vars. New vars applied to objects creted after setting it
 void sd::Slide::SetBasePicture(const sd::Picture& pic)
 {
 	_basepic = pic;
 }
 
-//init static vars. New vars applies to objects creted after setting it
+//init static vars. New vars applied to objects creted after setting it
 void sd::Slide::SetBaseButtonPicture(const sd::Picture& pic)
 {
 	_basebuttonpic = pic;
@@ -142,14 +149,14 @@ void sd::Slide::SetPosition(float x, float y)
 void sd::Slide::SetPosition(const sf::Vector2f& src)
 {
 	_pos = src;
-	_slidebutton.SetPosition(_pos);
+	_slidebutton.SetPosition(_pos); //TODO: is it right? mb need to call UpdateButton?
 }
 
 
-//size of background picture so size of button
 sf::Vector2f sd::Slide::GetSize() const
 { return _size; }
 
+//TODO:
 void sd::Slide::SetSize(float x, float y)
 {}
 
