@@ -27,7 +27,7 @@ ECHOINST=
 ECHODONE=[R] $(BCLRGRN)Built target $(CLRCYN)
 
 
-.PHONY: all clean installedlib
+.PHONY: all clean installedlib libinstall
 
 all: installedlib $(TARGET)
 
@@ -37,6 +37,9 @@ clean:
 
 installedlib:
 			@cd $(LIB) && $(MAKE)
+
+libinstall: installedlib
+			@cd $(LIB) && $(MAKE) install
 
 #main
 $(TMP)main.o: $(SOURCE)main.cpp #$(ALLHEADERS)

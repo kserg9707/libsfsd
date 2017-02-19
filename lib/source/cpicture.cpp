@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-#include "../headers/cpicture.h"
+#include "../headers/cpicture.hpp"
 
 
 
@@ -8,6 +8,23 @@
 void sd::Picture::_LoadImage(bool centrepivot, const sf::Color& maskclr, bool mask)
 {
 	_image.loadFromFile("resources/images/" + _file);
+	if (mask)
+		_image.createMaskFromColor(maskclr);
+	
+	_size = _image.getSize();
+	if (_fsize.x <= 0 || _fsize.y <= 0)
+		_fsize = sf::Vector2f(_size.x, _size.y);
+	
+	_texture.loadFromImage(_image);
+	
+	_sprite.setTexture(_texture);
+	_sprite.setTextureRect(sf::IntRect(0, 0, _fsize.x, _fsize.y));
+	if (centrepivot)
+		_sprite.setOrigin(_fsize.x / 2, _fsize.y / 2);
+}
+
+void sd::Picture::_SetImage(bool centrepivot, const sf::Color& maskclr, bool mask)
+{
 	if (mask)
 		_image.createMaskFromColor(maskclr);
 	
@@ -53,6 +70,22 @@ sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, const sf
 : _file(file), _fsize(fsize)
 {
 	_LoadImage(setpivot, maskclr, true);
+	initok = true;
+}
+
+sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, bool setpivot)
+: _image(image), _fsize(fsize)
+{
+	_file = "";
+	_SetImage(setpivot, sf::Color::White, false);
+	initok = true;
+}
+
+sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, const sf::Color& maskclr, bool setpivot)
+: _image(image), _fsize(fsize)
+{
+	_file = "";
+	_SetImage(setpivot, maskclr, true);
 	initok = true;
 }
 

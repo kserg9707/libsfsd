@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
 
-#include "../headers/vcontrol.h"
-#include "../headers/eaction.h"
-#include "../headers/sbasevalues.h"
-#include "../headers/cpicture.h"
-#include "../headers/cbutton.h"
+#include "../headers/vcontrol.hpp"
+#include "../headers/eaction.hpp"
+#include "../headers/sglobal.hpp"
+#include "../headers/cpicture.hpp"
+#include "../headers/cbutton.hpp"
 
 //static vars
 sd::Picture sd::Button::_basepic;

@@ -8,11 +8,13 @@ TARGETLIB=lib$(TARGET)
 
 INSTALLPATHLIB=/usr/local/lib/
 INSTALLPATHINCLUDE=/usr/local/include/$(TARGET)/
+INSTALLPATHSHARE=/usr/local/share/$(TARGET)/
 
-ALLHEADERS=$(HEADERS)cpicture.h $(HEADERS)cbutton.h $(HEADERS)cmessagebox.h $(HEADERS)sbasevalues.h $(HEADERS)cslide.h $(HEADERS)vcontrol.h $(HEADERS)eaction.h
+ALLHEADERS=$(HEADERS)controls.hpp $(HEADERS)cpicture.hpp $(HEADERS)cbutton.hpp $(HEADERS)cmessagebox.hpp $(HEADERS)sglobal.hpp $(HEADERS)cslide.hpp $(HEADERS)vcontrol.hpp $(HEADERS)eaction.hpp
+RESOURCES=../share/$(TARGET)/
 
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
-OBJECTS=$(TMP)cpicture.o $(TMP)cbutton.o $(TMP)cmessagebox.o $(TMP)sbasevalues.o $(TMP)cslide.o
+OBJECTS=$(TMP)cpicture.o $(TMP)cbutton.o $(TMP)cmessagebox.o $(TMP)sglobal.o $(TMP)cslide.o
 GCC=$(CXX) $(CFLAGS) -O1 -Wall -pedantic -Werror -fpic
 
 CLRGRN=\033[00;32m
@@ -29,7 +31,7 @@ ECHOINST=
 ECHODONE=[R] $(BCLRGRN)Built target $(CLRCYN)
 
 
-.PHONY: all clean install uninstall $(TARGET)
+.PHONY: all clean install uninstall $(TARGET) install_resources
 
 all: $(TARGETLIB)
 
@@ -38,9 +40,9 @@ clean:
 			@rm -f $(TARGETLIB)* $(TMP)*
 
 #base values
-$(TMP)sbasevalues.o: $(SOURCE)sbasevalues.cpp $(ALLHEADERS)
-			@echo -e "$(ECHOBUILD)$(TMP)sbasevalue.o$(CLRRST)"
-			@$(GCC) -c $(SOURCE)sbasevalues.cpp -o $(TMP)sbasevalues.o
+$(TMP)sglobal.o: $(SOURCE)sglobal.cpp $(ALLHEADERS)
+			@echo -e "$(ECHOBUILD)$(TMP)sglobal.o$(CLRRST)"
+			@$(GCC) -c $(SOURCE)sglobal.cpp -o $(TMP)sglobal.o
 
 #class Picture
 $(TMP)cpicture.o: $(SOURCE)cpicture.cpp $(ALLHEADERS)
@@ -71,23 +73,25 @@ $(TARGETLIB).a: $(OBJECTS)
 			@echo -e "$(ECHOLINKSTAT)$(TARGETLIB).a$(CLRRST) "
 			@$(AR) crs $(TARGETLIB).a $(OBJECTS)
 
-install: $(INSTALLPATHLIB)$(TARGETLIB).so $(INSTALLPATHLIB)$(TARGETLIB).a
+install: install_resources $(INSTALLPATHLIB)$(TARGETLIB).so $(INSTALLPATHLIB)$(TARGETLIB).a
 
 $(INSTALLPATHLIB)$(TARGETLIB).so: $(TARGETLIB).so
-			@echo -e "[C] $(CLRGRN)Creating directories$(CLRRST) "
-			@-mkdir $(INSTALLPATHINCLUDE)
 			@echo -e "[C] $(CLRGRN)Copying libs to $(CLRCYN)$(INSTALLPATHLIB)$(CLRRST) "
-			@install $(TARGETLIB).a $(INSTALLPATHINCLUDE)$(TARGETLIB).a
-			@echo -e "[C] $(CLRGRN)Copying headers to $(CLRCYN)$(INSTALLPATHINCLUDE)include$(CLRRST) "
-			@install --mode=0644 -t $(INSTALLPATHINCLUDE) $(ALLHEADERS)
+			@install $(TARGETLIB).so $(INSTALLPATHLIB)$(TARGETLIB).so
 
 $(INSTALLPATHLIB)$(TARGETLIB).a: $(TARGETLIB).a
+			@echo -e "[C] $(CLRGRN)Copying libs to $(CLRCYN)$(INSTALLPATHLIB)$(CLRRST) "
+			@install $(TARGETLIB).a $(INSTALLPATHLIB)$(TARGETLIB).a
+
+install_resources:
 			@echo -e "[C] $(CLRGRN)Creating directories$(CLRRST) "
 			@-mkdir $(INSTALLPATHINCLUDE)
-			@echo -e "[C] $(CLRGRN)Copying libs to $(CLRCYN)$(INSTALLPATHLIB)$(CLRRST) "
-			@install $(TARGETLIB).a $(INSTALLPATHINCLUDE)$(TARGETLIB).a
 			@echo -e "[C] $(CLRGRN)Copying headers to $(CLRCYN)$(INSTALLPATHINCLUDE)$(CLRRST) "
 			@install --mode=0644 -t $(INSTALLPATHINCLUDE) $(ALLHEADERS)
+			@echo -e "[C] $(CLRGRN)Copying resources to $(CLRCYN)$(INSTALLPATHSHARE)$(CLRRST) "
+			@cp -r -t $(INSTALLPATHSHARE) $(RESOURCES)/*
+			@chmod -R +r $(INSTALLPATHSHARE)/*
+			@chmod +x $(INSTALLPATHSHARE)/*
 
 uninstall:
 			@echo -e "[C] $(CLRGRN)Removing libs from $(CLRCYN)$(INSTALLPATHLIB)$(CLRRST) "
@@ -95,9 +99,11 @@ uninstall:
 			@rm -f $(INSTALLPATHINCLUDE)$(TARGETLIB).a
 			@echo -e "[C] $(CLRGRN)Removing headers from $(CLRCYN)$(INSTALLPATHINCLUDE)$(CLRRST) "
 			@rm -f $(INSTALLPATHINCLUDE)*
+			@echo -e "[C] $(CLRGRN)Removing resources from $(CLRCYN)$(INSTALLPATHSHARE)$(CLRRST) "
+			@rm -rf $(INSTALLPATHSHARE)*
+			@rm -rf $(INSTALLPATHSHARE)../$(TARGET)
 			@echo -e "[C] $(CLRGRN)Removing directories$(CLRRST) "
 			@rm -r $(INSTALLPATHINCLUDE)
-
 
 #Makefile info
 help:

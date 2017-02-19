@@ -4,14 +4,15 @@
 #include <vector>
 
 //#include "../headers/vcontrol.h"
-#include "../lib/headers/vcontrol.h"
-#include "../lib/headers/sbasevalues.h"
-#include "../lib/headers/eaction.h"
-#include "../lib/headers/cpicture.h"
-#include "../lib/headers/cbutton.h"
-#include "../lib/headers/cslide.h"
-#include "../lib/headers/cmessagebox.h"
+//#include "../lib/headers/vcontrol.h"
+//#include "../lib/headers/sbasevalues.h"
+//#include "../lib/headers/eaction.h"
+//#include "../lib/headers/cpicture.h"
+//#include "../lib/headers/cbutton.h"
+//#include "../lib/headers/cslide.h"
+//#include "../lib/headers/cmessagebox.h"
 //#include "../headers/cglyphtext.h" not needed for now
+#include "../lib/headers/controls.hpp"
 
 sf::RenderWindow* mainwindow; //main window of the program
 sd::Button b; //quit button
@@ -25,10 +26,12 @@ std::vector<sd::Control*> controls;
 
 std::vector< std::vector<char> > map;
 
-void Init()
+int Init(char** env)
 {
-	//init global vars (button solors for now)
-	sd::Global::Init();
+	//init global vars (button colors for now)
+	int r = sd::Global::Init(env);
+	if (r)
+		return r;
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -53,12 +56,13 @@ void Init()
 	
 	//init static variables
 	//TODO: include some resources into lib source
-	sd::Button::SetBasePicture( sd::Picture("button.png", sf::Vector2f(-1, -1), true) );
+	/*sd::Button::SetBasePicture( sd::Picture("button.png", sf::Vector2f(-1, -1), true) );
 	sd::Button::SetBaseFont( fontsans );
 	sd::MessageBox::SetBaseButtonPicture( sd::Picture("button.png", sf::Vector2f(-1, -1), true) );
 	sd::MessageBox::SetBaseFont( fontsans );
 	sd::Slide::SetBasePicture( sd::Picture("slide.png", sf::Vector2f(-1, -1), false) );
-	sd::Slide::SetBaseButtonPicture( sd::Picture("slidebutton.png", sf::Vector2f(-1, -1), false) );
+	sd::Slide::SetBaseButtonPicture( sd::Picture("slidebutton.png", sf::Vector2f(-1, -1), false) );*/
+	return 0;
 }
 
 //when closing program
@@ -158,9 +162,19 @@ void DrawHud()
 		controls.at(i)->Draw(*mainwindow);
 }
 
-int main()
+int main(int argc, char* argv[], char* env[])
 {
-	Init();
+	if (argc == 2)
+		if (std::string(argv[1]) == "--env")
+		{
+			for (int i = 0; env[i]; i++)
+				std::cout << env[i] << std::endl;
+			return 0;
+		}
+	
+	int r = Init(env);
+	if (r)
+		return r;
 	
 	sf::RenderWindow& window = *mainwindow;
 	

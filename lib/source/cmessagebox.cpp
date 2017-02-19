@@ -2,10 +2,10 @@
 #include <cstdio>
 #include <iostream>
 
-#include "../headers/eaction.h"
-#include "../headers/cpicture.h"
-#include "../headers/cbutton.h"
-#include "../headers/cmessagebox.h"
+#include "../headers/eaction.hpp"
+#include "../headers/cpicture.hpp"
+#include "../headers/cbutton.hpp"
+#include "../headers/cmessagebox.hpp"
 
 const int sd::MessageBox::ResultNull = -1;
 /*const sd::MessageBox::MessageBoxResult sd::MessageBox::ResultOK = OK; //info, ask 1
