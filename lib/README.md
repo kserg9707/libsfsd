@@ -134,6 +134,7 @@ public:
 
        	static int Init(char** env);
 };
+```
 
 ### class Control
 Base class for each object.
