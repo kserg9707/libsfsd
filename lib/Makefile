@@ -10,7 +10,7 @@ INSTALLPATHLIB=/usr/local/lib/
 INSTALLPATHINCLUDE=/usr/local/include/$(TARGET)/
 INSTALLPATHSHARE=/usr/local/share/$(TARGET)/
 
-ALLHEADERS=$(HEADERS)controls.hpp $(HEADERS)cpicture.hpp $(HEADERS)cbutton.hpp $(HEADERS)cmessagebox.hpp $(HEADERS)sglobal.hpp $(HEADERS)cslide.hpp $(HEADERS)vcontrol.hpp $(HEADERS)eaction.hpp
+ALLHEADERS=$(HEADERS)Controls.hpp $(HEADERS)cpicture.hpp $(HEADERS)cbutton.hpp $(HEADERS)cmessagebox.hpp $(HEADERS)sglobal.hpp $(HEADERS)cslide.hpp $(HEADERS)vcontrol.hpp $(HEADERS)eaction.hpp
 RESOURCES=../share/$(TARGET)/
 
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
@@ -86,6 +86,7 @@ $(INSTALLPATHLIB)$(TARGETLIB).a: $(TARGETLIB).a
 install_resources:
 			@echo -e "[C] $(CLRGRN)Creating directories$(CLRRST) "
 			@-mkdir $(INSTALLPATHINCLUDE)
+			@-mkdir $(INSTALLPATHSHARE)
 			@echo -e "[C] $(CLRGRN)Copying headers to $(CLRCYN)$(INSTALLPATHINCLUDE)$(CLRRST) "
 			@install --mode=0644 -t $(INSTALLPATHINCLUDE) $(ALLHEADERS)
 			@echo -e "[C] $(CLRGRN)Copying resources to $(CLRCYN)$(INSTALLPATHSHARE)$(CLRRST) "

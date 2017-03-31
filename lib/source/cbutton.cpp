@@ -39,7 +39,7 @@ sf::Vector2f sd::Button::_PosFixOnGet() const
 
 
 
-sd::Type sd::Button::GetType() const
+sd::Control::Type sd::Button::GetType() const
 { return button; }
 
 sd::Button::Button()

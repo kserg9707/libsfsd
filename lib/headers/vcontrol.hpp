@@ -5,11 +5,13 @@
 
 namespace sd
 {
-enum Type {empty, button, slide};
 
 class Control
 {
+public:	enum Type {empty, button, slide};
+
 protected:
+	Type type; //TODO: use this variable in other classes
 	sf::Vector2f _pos; //button center pos
 	sf::Vector2f _size; //is it used?
 	
@@ -17,7 +19,7 @@ protected:
 	bool _visible;
 	
 public:
-	virtual Type GetType() const { return empty; }
+	virtual Type GetType() const { return type; }
 	
 	virtual sf::Vector2f GetPosition() const = 0;
 	

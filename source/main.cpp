@@ -12,7 +12,7 @@
 //#include "../lib/headers/cslide.h"
 //#include "../lib/headers/cmessagebox.h"
 //#include "../headers/cglyphtext.h" not needed for now
-#include "../lib/headers/controls.hpp"
+#include "../lib/headers/Controls.hpp"
 
 sf::RenderWindow* mainwindow; //main window of the program
 sd::Button b; //quit button
@@ -91,7 +91,7 @@ sd::Action MouseTest(sf::Vector2f mouse)
 {
 	//check except slide
 	for (unsigned int i = 0; i < controls.size(); i++)
-		if (controls.at(i)->GetType() != sd::slide) //TODO: sd::slide -> sd::Control::Slide?
+		if (controls.at(i)->GetType() != sd::Control::slide)
 			controls.at(i)->DownTest(mouse);
 
 	//move slides if pressed

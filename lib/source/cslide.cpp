@@ -69,7 +69,7 @@ void sd::Slide::_UpdateButton()
 
 
 //public
-sd::Type sd::Slide::GetType() const
+sd::Control::Type sd::Slide::GetType() const
 { return slide; }
 
 sd::Slide::Slide()

@@ -2,4 +2,5 @@
 *~
 test
 TODO
-lib/bintoarray
+*.a
+*.so
