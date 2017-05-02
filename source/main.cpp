@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <string>
+#include <sstream>
 
 //#include "../lib/headers/vcontrol.h"
 //#include "../lib/headers/sbasevalues.h"
@@ -20,10 +22,21 @@ sd::Slide sl2; //pitch slide
 sf::Font fontsans;
 sf::Music music1;
 
+sd::Picture p;
+int pf = 0;
+bool mir = false;
+
 //array of pointers for each control from sfsd
 std::vector<sd::Control*> controls;
 
 std::vector< std::vector<char> > map;
+
+std::string ToString(int n)
+{
+	std::stringstream ss;
+	ss << n;
+	return ss.str();
+}
 
 int Init(char** env)
 {
@@ -61,6 +74,7 @@ int Init(char** env)
 	sd::MessageBox::SetBaseFont( fontsans );
 	sd::Slide::SetBasePicture( sd::Picture("slide.png", sf::Vector2f(-1, -1), false) );
 	sd::Slide::SetBaseButtonPicture( sd::Picture("slidebutton.png", sf::Vector2f(-1, -1), false) );*/
+	p = sd::Picture("hero.png", sf::Vector2f(96, 96));
 	return 0;
 }
 
@@ -71,9 +85,19 @@ void Uninit()
 }
 
 //keyboard test
-void KeyTest()
+void KeyTest(const sf::Event& event)
 {
-
+		if (event.key.code == sf::Keyboard::Right)
+			pf++;
+		if (event.key.code == sf::Keyboard::Left)
+			pf--;
+		if (pf < 0) pf = p.FramesCount()-1;
+		if (pf > p.FramesCount()-1) pf = 0;
+		if (event.key.code == sf::Keyboard::Up)
+			mir = !mir;
+		if (event.key.code == sf::Keyboard::Down)
+			mir = !mir;
+		p.SetFrame(pf, mir);
 }
 
 //mouse test, call .PressedTest(mouse) for each control
@@ -237,6 +261,7 @@ int main(int argc, char* argv[], char* env[])
 			//KeyHit
 			if (event.type == sf::Event::KeyPressed)
 			{
+				KeyTest(event);
 				if (event.key.code == sf::Keyboard::Return)
 				{}
 			}
@@ -296,6 +321,7 @@ int main(int argc, char* argv[], char* env[])
 		//draw window
 		DrawMap();
 		DrawHud();
+		p.Draw(100,100,window);
 
 		//moved to DrawHud
 		/*b.Draw(window);
@@ -304,7 +330,12 @@ int main(int argc, char* argv[], char* env[])
 		//b.SetPosition(b.GetPosition() + sf::Vector2f(0.5, 0.5));
 		//sf::Vector2f t = b.GetSize();
 		//b.SetSize(t+sf::Vector2f(0.5, 0.5));
-
+		
+		/*sf::Font ft;
+		ft.loadFromFile("resources/fonts/DroidSans.ttf");
+		sf::Text t(ToString(pf), ft, 14);
+		window.draw(t);*/
+		
 		//flip
 		window.display();
 

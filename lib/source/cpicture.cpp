@@ -92,6 +92,26 @@ void sd::Picture::_CountFrames()
 	//if (_framws
 }
 
+void sd::Picture::_CheckFrame()
+{
+	//TODO: below zero doesn't work
+	if (_frame.x >= _frames.x || _frame.x < 0)
+		_frame.x %= _frames.x;
+	if (_frame.y >= _frames.y || _frame.y < 0)
+		_frame.y %= _frames.y;
+}
+
+void sd::Picture::_UpdateFrame()
+{
+	sf::IntRect f(_frame.x * _fsize.x, _frame.y * _fsize.y, (int)_fsize.x, (int)_fsize.y);
+	if (_mirrored)
+	{
+		f.left += _fsize.x;
+		f.width = -f.width;
+	}
+	_sprite.setTextureRect(f);
+}
+
 
 //public
   //////////////////
@@ -101,7 +121,7 @@ void sd::Picture::_CountFrames()
 //not full init
 sd::Picture::Picture()
 {
-	_frame = 0;
+	_frame = sf::Vector2i();
 	_mirrored = false;
 	initok = false;
 }
@@ -109,7 +129,7 @@ sd::Picture::Picture()
 sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, bool setpivot)
 : _file(file), _fsize(fsize)
 {
-	_frame = 0;
+	_frame = sf::Vector2i();
 	_mirrored = false;
 	_LoadImage(setpivot, sf::Color::White, false);
 	initok = true;
@@ -118,7 +138,7 @@ sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, bool set
 sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, const sf::Color& maskclr, bool setpivot)
 : _file(file), _fsize(fsize)
 {
-	_frame = 0;
+	_frame = sf::Vector2i();
 	_mirrored = false;
 	_LoadImage(setpivot, maskclr, true);
 	initok = true;
@@ -128,7 +148,7 @@ sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, bool set
 : _image(image), _fsize(fsize)
 {
 	_file = "";
-	_frame = 0;
+	_frame = sf::Vector2i();
 	_mirrored = false;
 	_SetImage(setpivot, sf::Color::White, false);
 	initok = true;
@@ -138,7 +158,7 @@ sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, const sf
 : _image(image), _fsize(fsize)
 {
 	_file = "";
-	_frame = 0;
+	_frame = sf::Vector2i();
 	_mirrored = false;
 	_SetImage(setpivot, maskclr, true);
 	initok = true;
@@ -213,6 +233,49 @@ sf::Color sd::Picture::GetColor() const
 
 void sd::Picture::SetColor(const sf::Color& clr)
 { _sprite.setColor(clr); }
+
+
+// _frames
+int sd::Picture::FramesCount() const
+{ return _frames.x * _frames.y; }
+
+sf::Vector2i sd::Picture::FramesCountCoord() const
+{ return _frames; }
+
+// _frame
+int sd::Picture::GetFrame() const
+{ return _frame.y * _frames.x + _frame.x; }
+
+sf::Vector2i sd::Picture::GetFrameCoord() const //return _frame
+{ return _frame; }
+
+void sd::Picture::SetFrame(int frame, bool mirrored)
+{
+	if (_frames.y == 0)
+		SetFrameCoord(sf::Vector2i(), mirrored);
+	else if (_frames.y == 1)
+		SetFrameCoord(sf::Vector2i(frame, 0), mirrored);
+	else
+		SetFrameCoord(sf::Vector2i(frame % _frames.x, frame / _frames.x), mirrored);
+}
+
+void sd::Picture::SetFrame(const sf::Vector2i& frame, bool mirrored)
+{
+	SetFrameCoord(frame, mirrored);
+}
+
+void sd::Picture::SetFrame(int x, int y, bool mirrored) //same but another name ('cause Get)
+{
+	SetFrameCoord(sf::Vector2i(x, y), mirrored);
+}
+
+void sd::Picture::SetFrameCoord(const sf::Vector2i& frame, bool mirrored) //same but another name ('cause Get)
+{
+	_frame = frame;
+	_CheckFrame();
+	_mirrored = mirrored;
+	_UpdateFrame();
+}
 
 
 

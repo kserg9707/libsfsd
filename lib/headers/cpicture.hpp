@@ -22,7 +22,7 @@ private:
 	sf::Vector2f _fsize; //size of one frame
 	sf::Vector2i _frames; //frames count
 	
-	int _frame;
+	sf::Vector2i _frame;
 	bool _mirrored;
 	
 	
@@ -42,6 +42,13 @@ private:
 	
 	//count number of frames
 	void _CountFrames();
+	
+	//keep _frame in range
+	void _CheckFrame();
+	
+	//set current frame to sprite
+	void _UpdateFrame();
+	
 public:
 	  //////////////////
 	 // Constructors //
@@ -119,6 +126,24 @@ public:
 	sf::Color GetColor() const;
 	
 	void SetColor(const sf::Color& clr);
+	
+	// _frames
+	int FramesCount() const;
+	
+	sf::Vector2i FramesCountCoord() const;
+	
+	// _frame
+	int GetFrame() const;
+	
+	sf::Vector2i GetFrameCoord() const; //return _frame
+	
+	void SetFrame(int frame, bool mirrored = false);
+	
+	void SetFrame(const sf::Vector2i& frame, bool mirrored = false);
+	
+	void SetFrame(int x, int y, bool mirrored = false);
+	
+	void SetFrameCoord(const sf::Vector2i& frame, bool mirrored = false);
 	
 	
 	  ///////////////////
