@@ -5,15 +5,19 @@
 
 
 //private
+void sd::Picture::_FrameSizeCheck()
+{
+	if (_fsize.x <= 0 || _fsize.y <= 0 || _fsize.x > _size.x || _fsize.y > _size.y)
+		_fsize = sf::Vector2f(_size.x, _size.y);
+}
+
 void sd::Picture::_LoadImage(bool centrepivot, const sf::Color& maskclr, bool mask)
 {
 	_image.loadFromFile("resources/images/" + _file);
 	if (mask)
 		_image.createMaskFromColor(maskclr);
 	
-	_size = _image.getSize();
-	if (_fsize.x <= 0 || _fsize.y <= 0)
-		_fsize = sf::Vector2f(_size.x, _size.y);
+	_UpdateImage();
 	
 	_texture.loadFromImage(_image);
 	
@@ -28,9 +32,7 @@ void sd::Picture::_SetImage(bool centrepivot, const sf::Color& maskclr, bool mas
 	if (mask)
 		_image.createMaskFromColor(maskclr);
 	
-	_size = _image.getSize();
-	if (_fsize.x <= 0 || _fsize.y <= 0)
-		_fsize = sf::Vector2f(_size.x, _size.y);
+	_UpdateImage();
 	
 	_texture.loadFromImage(_image);
 	
@@ -40,9 +42,37 @@ void sd::Picture::_SetImage(bool centrepivot, const sf::Color& maskclr, bool mas
 		_sprite.setOrigin(_fsize.x / 2, _fsize.y / 2);
 }
 
+void sd::Picture::_UpdateImage()
+{
+	_size = _image.getSize();
+	_FrameSizeCheck();
+	
+	_CountFrames();
+}
+
+void sd::Picture::_SetSprite(const sf::Sprite& src)
+{
+	if (src.getTexture() == NULL)
+		return;
+	_image = src.getTexture()->copyToImage();
+	_UpdateImage();
+	_CountFrames();
+	_texture.loadFromImage(_image);
+	_texture.setSmooth(src.getTexture()->isSmooth());
+	_sprite.setTexture(_texture);
+	_sprite.setTextureRect(src.getTextureRect());
+	_sprite.setOrigin(src.getOrigin());
+	_sprite.setPosition(src.getPosition());
+	_sprite.setRotation(src.getRotation());
+	_sprite.setScale(src.getScale());
+	_sprite.setColor(src.getColor());
+}
+
 void sd::Picture::_SetSprite(const sf::Image& srcimage, const sf::Texture& srctexture, const sf::Sprite& srcsprite)
 {
 	_image = srcimage;
+	_UpdateImage();
+	_CountFrames();
 	_texture = srctexture;
 	_texture.setSmooth(true);
 	_sprite.setTexture(_texture);
@@ -54,14 +84,33 @@ void sd::Picture::_SetSprite(const sf::Image& srcimage, const sf::Texture& srcte
 	_sprite.setColor(srcsprite.getColor());
 }
 
+//count number of frames
+void sd::Picture::_CountFrames()
+{
+	_frames.x = _size.x / _fsize.x;
+	_frames.y = _size.y / _fsize.y;
+	//if (_framws
+}
+
 
 //public
+  //////////////////
+ // Constructors //
+//////////////////
+
+//not full init
 sd::Picture::Picture()
-{initok = false;}
+{
+	_frame = 0;
+	_mirrored = false;
+	initok = false;
+}
 
 sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, bool setpivot)
 : _file(file), _fsize(fsize)
 {
+	_frame = 0;
+	_mirrored = false;
 	_LoadImage(setpivot, sf::Color::White, false);
 	initok = true;
 }
@@ -69,6 +118,8 @@ sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, bool set
 sd::Picture::Picture(const sf::String& file, const sf::Vector2f& fsize, const sf::Color& maskclr, bool setpivot)
 : _file(file), _fsize(fsize)
 {
+	_frame = 0;
+	_mirrored = false;
 	_LoadImage(setpivot, maskclr, true);
 	initok = true;
 }
@@ -77,6 +128,8 @@ sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, bool set
 : _image(image), _fsize(fsize)
 {
 	_file = "";
+	_frame = 0;
+	_mirrored = false;
 	_SetImage(setpivot, sf::Color::White, false);
 	initok = true;
 }
@@ -85,31 +138,31 @@ sd::Picture::Picture(const sf::Image& image, const sf::Vector2f& fsize, const sf
 : _image(image), _fsize(fsize)
 {
 	_file = "";
+	_frame = 0;
+	_mirrored = false;
 	_SetImage(setpivot, maskclr, true);
 	initok = true;
 }
 
 sd::Picture::Picture(const sd::Picture& src)
+: _file(src._file), _size(src._size), _fsize(src._fsize), _frame(src._frame), _mirrored(src._mirrored)
 {
-	_size = src._size;
-	_fsize = src._fsize;
-	_file = src._file;
-	_SetSprite(src._image, src._texture, src._sprite);
-	initok = true;
+//	if (src.initok)
+	//_SetSprite(src._image, src._texture, src._sprite);
+	_SetSprite(src._sprite);
+	initok = src.initok;
 }
 
 sd::Picture& sd::Picture::operator = (const Picture& src)
 {
-	if (!src.initok)
-	{
-		//log
-		return *this;
-	}
 	_size = src._size;
 	_fsize = src._fsize;
 	_file = src._file;
-	_SetSprite(src._image, src._texture, src._sprite);
-	initok = true;
+	_frame = src._frame;
+	_mirrored = src._mirrored;
+	//_SetSprite(src._image, src._texture, src._sprite);
+	_SetSprite(src._sprite);
+	initok = src.initok;
 	return *this;
 }
 
@@ -120,6 +173,9 @@ bool sd::Picture::IsInit() const
 
 sf::Image sd::Picture::GetImage() const
 { return _image; }
+
+sf::Texture sd::Picture::GetTexture() const
+{ return _texture; }
 
 
 float sd::Picture::GetRotation() const
