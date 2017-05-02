@@ -7,6 +7,7 @@
 #include "../headers/sglobal.hpp"
 #include "../headers/cpicture.hpp"
 #include "../headers/cbutton.hpp"
+#include "../headers/cradiobutton.hpp"
 #include "../headers/cslide.hpp"
 #include "../headers/cmessagebox.hpp"
 
@@ -22,12 +23,16 @@ sf::Color sd::Global::_colordisabledbase = sf::Color(215, 215, 215);
 sf::Color sd::Global::_colordisabledtext = sf::Color(120, 120, 120);
 sf::Font sd::Global::_font;
 
-std::vector<sf::Image> sd::Global::_images(3);
+std::vector<sf::Image> sd::Global::_images(5);
 sd::Picture sd::Global::_picturebutton;
+sd::Picture sd::Global::_pictureradiobuttonoff;
+sd::Picture sd::Global::_pictureradiobuttonon;
 sd::Picture sd::Global::_picturesliderail;
 sd::Picture sd::Global::_pictureslidebutton;
 
 const sd::Picture& sd::Global::PictureButton = _picturebutton;
+const sd::Picture& sd::Global::PictureRadioButtonOff = _pictureradiobuttonoff;
+const sd::Picture& sd::Global::PictureRadioButtonOn = _pictureradiobuttonon;
 const sd::Picture& sd::Global::PictureSlideRail = _picturesliderail;
 const sd::Picture& sd::Global::PictureSlideButton = _pictureslidebutton;
 //const sf::Image sd::Global::ImageCheckBox;
@@ -120,6 +125,8 @@ int sd::Global::_LoadImages(std::vector<std::string> paths)
 	std::ifstream testfile;
 	std::vector<std::string> localpaths;
 	localpaths.push_back("/../share/sfsd/images/button.png");
+	localpaths.push_back("/../share/sfsd/images/radiobuttonoff.png");
+	localpaths.push_back("/../share/sfsd/images/radiobuttonon.png");
 	localpaths.push_back("/../share/sfsd/images/slide.png");
 	localpaths.push_back("/../share/sfsd/images/slidebutton.png");
 	for (unsigned int j = 0; j < localpaths.size(); j++)
@@ -139,10 +146,18 @@ int sd::Global::_LoadImages(std::vector<std::string> paths)
 			}
 		}
 	
-	sd::Button::SetBasePicture( sd::Picture(_images.at(0), sf::Vector2f(-1, -1), true) );
-	sd::MessageBox::SetBaseButtonPicture( sd::Picture(_images.at(0), sf::Vector2f(-1, -1), true) );
-	sd::Slide::SetBasePicture( sd::Picture(_images.at(1), sf::Vector2f(-1, -1), false) );
-	sd::Slide::SetBaseButtonPicture( sd::Picture(_images.at(2), sf::Vector2f(-1, -1), false) );
+	_picturebutton = sd::Picture(_images.at(0), sf::Vector2f(-1, -1), true);
+	_pictureradiobuttonoff = sd::Picture(_images.at(1), sf::Vector2f(-1, -1), true);
+	_pictureradiobuttonon = sd::Picture(_images.at(2), sf::Vector2f(-1, -1), true);
+	_picturesliderail = sd::Picture(_images.at(3), sf::Vector2f(-1, -1), false);
+	_pictureslidebutton = sd::Picture(_images.at(4), sf::Vector2f(-1, -1), false);
+	
+	sd::Button::SetBasePicture( _picturebutton );
+	sd::MessageBox::SetBaseButtonPicture( _picturebutton );
+	sd::RadioButton::SetBaseOffPicture( _pictureradiobuttonoff ); //new
+	sd::RadioButton::SetBaseOnPicture( _pictureradiobuttonon ); //new
+	sd::Slide::SetBasePicture( _picturesliderail );
+	sd::Slide::SetBaseButtonPicture( _pictureslidebutton );
 	
 	return 0;
 }

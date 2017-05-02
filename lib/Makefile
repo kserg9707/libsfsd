@@ -10,11 +10,11 @@ INSTALLPATHLIB=/usr/local/lib/
 INSTALLPATHINCLUDE=/usr/local/include/$(TARGET)/
 INSTALLPATHSHARE=/usr/local/share/$(TARGET)/
 
-ALLHEADERS=$(HEADERS)Controls.hpp $(HEADERS)cpicture.hpp $(HEADERS)cbutton.hpp $(HEADERS)cmessagebox.hpp $(HEADERS)sglobal.hpp $(HEADERS)cslide.hpp $(HEADERS)vcontrol.hpp $(HEADERS)eaction.hpp
+ALLHEADERS=$(HEADERS)Controls.hpp $(HEADERS)cpicture.hpp $(HEADERS)cbutton.hpp $(HEADERS)cradiobutton.hpp $(HEADERS)cmessagebox.hpp $(HEADERS)sglobal.hpp $(HEADERS)cslide.hpp $(HEADERS)vcontrol.hpp $(HEADERS)eaction.hpp
 RESOURCES=../share/$(TARGET)/
 
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
-OBJECTS=$(TMP)cpicture.o $(TMP)cbutton.o $(TMP)cmessagebox.o $(TMP)sglobal.o $(TMP)cslide.o
+OBJECTS=$(TMP)cpicture.o $(TMP)cbutton.o $(TMP)cradiobutton.o $(TMP)cmessagebox.o $(TMP)sglobal.o $(TMP)cslide.o
 GCC=$(CXX) $(CFLAGS) -O1 -Wall -pedantic -Werror -fpic
 
 CLRGRN=\033[00;32m
@@ -53,6 +53,11 @@ $(TMP)cpicture.o: $(SOURCE)cpicture.cpp $(ALLHEADERS)
 $(TMP)cbutton.o: $(SOURCE)cbutton.cpp $(ALLHEADERS)
 			@echo -e "$(ECHOBUILD)$(TMP)cbutton.o$(CLRRST)"
 			@$(GCC) -c $(SOURCE)cbutton.cpp -o $(TMP)cbutton.o
+
+#class RadioButton
+$(TMP)cradiobutton.o: $(SOURCE)cradiobutton.cpp $(ALLHEADERS)
+			@echo -e "$(ECHOBUILD)$(TMP)cradiobutton.o$(CLRRST)"
+			@$(GCC) -c $(SOURCE)cradiobutton.cpp -o $(TMP)cradiobutton.o
 
 #classes: MessageBox (virtual), InfoMessageBox, Ask-, Choose-
 $(TMP)cmessagebox.o: $(SOURCE)cmessagebox.cpp $(ALLHEADERS)

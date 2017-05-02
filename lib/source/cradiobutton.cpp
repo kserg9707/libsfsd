@@ -4,13 +4,14 @@
 #include "../headers/eaction.hpp"
 #include "../headers/sglobal.hpp"
 #include "../headers/cpicture.hpp"
-#include "../headers/cbutton.hpp"
+#include "../headers/cradiobutton.hpp"
 
 //static vars
-sd::Picture sd::Button::_basepic;
-sf::Font sd::Button::_basefont;
+sd::Picture sd::RadioButton::_basepicoff;
+sd::Picture sd::RadioButton::_basepicon;
+sf::Font sd::RadioButton::_basefont;
 
-void sd::Button::_Init()
+void sd::RadioButton::_Init()
 {
 	//no pic = basepic cause one of ctors; so font
 	_pressedcolor = sd::Global::ColorPressedBase;
@@ -24,33 +25,34 @@ void sd::Button::_Init()
 	SetVisible(true);
 }
 
-void sd::Button::_PosFixOnSet()
+void sd::RadioButton::_PosFixOnSet()
 {
 	//_pos is centre, outside class - coords of left top corner
-	_pos += _bgpic.GetGlobalSize() / (float)2;
+	_pos += _bgpicoff.GetGlobalSize() / (float)2;
 	_pos = sf::Vector2f((int)(_pos.x), (int)(_pos.y));
 }
 
-sf::Vector2f sd::Button::_PosFixOnGet() const
+sf::Vector2f sd::RadioButton::_PosFixOnGet() const
 {
 	//same
-	return (_pos - (_bgpic.GetGlobalSize() / (float)2));
+	return (_pos - (_bgpicoff.GetGlobalSize() / (float)2));
 }
 
 
 
-sd::Control::Type sd::Button::GetType() const
+sd::Control::Type sd::RadioButton::GetType() const
 { return button; }
 
-sd::Button::Button()
+sd::RadioButton::RadioButton()
 {_initok = false;}
 
-sd::Button::Button(const sf::String& str, const sf::Vector2f& pos)
+sd::RadioButton::RadioButton(const sf::String& str, const sf::Vector2f& pos)
 : _str(str)
 {
 	_Init();
 	_pos = pos;
-	_bgpic = _basepic;
+	_bgpicoff = _basepicoff;
+	_bgpicon = _basepicon;
 	_font = _basefont;
 	_text = sf::Text(str, _font, _fontsize);
 	_text.setColor(sf::Color::Black);
@@ -58,17 +60,16 @@ sd::Button::Button(const sf::String& str, const sf::Vector2f& pos)
 	sf::Vector2f textsize(_text.getLocalBounds().width, _text.getLocalBounds().height);
 	_text.setOrigin((int)(textsize.x / 2), (int)(textsize.y / 2) + 3);
 	
-	_bgpic.CentreOrigin();
+	_bgpicoff.CentreOrigin();
+	_bgpicon.CentreOrigin();
 	_PosFixOnSet();
-	
-	_ishit = false;
 	
 	_initok = true;
 }
 
-sd::Button::Button(const sf::String& str, const sf::Vector2f& pos,
-const sf::Font& font, const sd::Picture& pic)
-: _str(str), _font(font), _bgpic(pic)
+sd::RadioButton::RadioButton(const sf::String& str, const sf::Vector2f& pos,
+const sf::Font& font, const sd::Picture& picoff, const sd::Picture& picon)
+: _str(str), _font(font), _bgpicoff(picoff), _bgpicon(picon)
 {
 	_Init();
 	_pos = pos;
@@ -78,16 +79,15 @@ const sf::Font& font, const sd::Picture& pic)
 	sf::Vector2f textsize(_text.getLocalBounds().width, _text.getLocalBounds().height);
 	_text.setOrigin((int)(textsize.x / 2), (int)(textsize.y / 2) + 3);
 	
-	_bgpic.CentreOrigin();
+	_bgpicoff.CentreOrigin();
+	_bgpicon.CentreOrigin();
 	_PosFixOnSet();
-	
-	_ishit = false;
 	
 	_initok = true;
 }
 
-sd::Button::Button(const sd::Button& src)
-: _str(src._str), _font(src._font), _bgpic(src._bgpic)
+sd::RadioButton::RadioButton(const sd::RadioButton& src)
+: _str(src._str), _font(src._font), _bgpicoff(src._bgpicoff), _bgpicon(src._bgpicon)
 {
 	_Init();
 	_pos = src._pos;
@@ -97,20 +97,20 @@ sd::Button::Button(const sd::Button& src)
 	sf::Vector2f textsize(_text.getLocalBounds().width, _text.getLocalBounds().height);
 	_text.setOrigin((int)(textsize.x / 2), (int)(textsize.y / 2) + 3);
 	
-	_bgpic.CentreOrigin();
+	_bgpicoff.CentreOrigin();
+	_bgpicon.CentreOrigin();
 	_PosFixOnSet();
-	
-	_ishit = false;
 	
 	_initok = true;
 }
 
-sd::Button& sd::Button::operator = (const sd::Button& src)
+sd::RadioButton& sd::RadioButton::operator = (const sd::RadioButton& src)
 {
 	_Init();
 	_str = src._str;
 	_pos = src._pos;
-	_bgpic = src._bgpic;
+	_bgpicoff = src._bgpicoff;
+	_bgpicon = src._bgpicon;
 	_font = src._font;
 	
 	_text = sf::Text(_str, _font, _fontsize);
@@ -120,10 +120,9 @@ sd::Button& sd::Button::operator = (const sd::Button& src)
 	//int (in setpos too) to avoid blur with float coords
 	_text.setOrigin((int)(textsize.x / 2), (int)(textsize.y / 2) + 3);
 	
-	_bgpic.CentreOrigin();
+	_bgpicoff.CentreOrigin();
+	_bgpicon.CentreOrigin();
 	_PosFixOnSet();
-	
-	_ishit = false;
 	
 	_initok = true;
 	
@@ -132,69 +131,76 @@ sd::Button& sd::Button::operator = (const sd::Button& src)
 
 
 //static
-void sd::Button::SetBasePicture(const sd::Picture& pic)
+void sd::RadioButton::SetBaseOffPicture(const sd::Picture& pic)
 {
-	_basepic = pic;
+	_basepicoff = pic;
+}
+void sd::RadioButton::SetBaseOnPicture(const sd::Picture& pic)
+{
+	_basepicon = pic;
 }
 
 //static
-void sd::Button::SetBaseFont(const sf::Font& font)
+void sd::RadioButton::SetBaseFont(const sf::Font& font)
 {
 	_basefont = font;
 }
 
 
 //TODO: correct pic size according to _size (do this too) and then put to _bgpic
-void sd::Button::SetPicture(sd::Picture pic, bool savesize)
+void sd::RadioButton::SetOffPicture(sd::Picture pic, bool savesize)
 {
-	_bgpic = pic;
+	_bgpicoff = pic;
+}
+void sd::RadioButton::SetOnPicture(sd::Picture pic, bool savesize)
+{
+	_bgpicon = pic;
 }
 
 
-sf::Vector2f sd::Button::GetPosition() const
+sf::Vector2f sd::RadioButton::GetPosition() const
 {
 	return _PosFixOnGet();
 }
 
-void sd::Button::SetPosition(float x, float y)
+void sd::RadioButton::SetPosition(float x, float y)
 {
 	_pos = sf::Vector2f(x, y);
 	_PosFixOnSet();
 }
 
-void sd::Button::SetPosition(const sf::Vector2f& src)
+void sd::RadioButton::SetPosition(const sf::Vector2f& src)
 {
 	_pos = src;
 	_PosFixOnSet();
 }
 
 
-sf::Vector2f sd::Button::GetSize() const
+sf::Vector2f sd::RadioButton::GetSize() const
 {
-	sf::Vector2f ret = _bgpic.GetGlobalSize();
+	sf::Vector2f ret = _bgpicoff.GetGlobalSize();
 	return ret;
 }
 
-void sd::Button::SetSize(float x, float y)
+void sd::RadioButton::SetSize(float x, float y)
 {
 	float multx = 0, multy = 0;
-	multx = x / _bgpic.GetLocalSize().x;
-	multy = y / _bgpic.GetLocalSize().y;
+	multx = x / _bgpicoff.GetLocalSize().x;
+	multy = y / _bgpicoff.GetLocalSize().y;
 	//_text.SetScale(multx, multy);
-	_bgpic.SetScale(multx, multy);
+	_bgpicoff.SetScale(multx, multy);
+	multx = x / _bgpicon.GetLocalSize().x;
+	multy = y / _bgpicon.GetLocalSize().y;
+	_bgpicon.SetScale(multx, multy);
 }
 
-void sd::Button::SetSize(sf::Vector2f size)
+void sd::RadioButton::SetSize(sf::Vector2f size)
 {
-	float multx = 0, multy = 0;
-	multx = size.x / _bgpic.GetLocalSize().x;
-	multy = size.y / _bgpic.GetLocalSize().y;
-	//_text.SetScale(multx, multy);
-	_bgpic.SetScale(multx, multy);
+	SetSize(size.x, size.y);
 }
 
 
-void sd::Button::Draw(sf::RenderWindow& targetwindow)
+void sd::RadioButton::Draw(sf::RenderWindow& targetwindow)
 {
 	if (!_initok)
 	{
@@ -203,14 +209,16 @@ void sd::Button::Draw(sf::RenderWindow& targetwindow)
 	}
 	if (_visible)
 	{
-		_bgpic.Draw(_pos, targetwindow);
+		//TODO
+		_bgpicoff.Draw(_pos, targetwindow);
+		_bgpicon.Draw(_pos, targetwindow);
 		_text.setPosition(_pos);
 		targetwindow.draw(_text);
 	}
 }
 
 
-bool sd::Button::PressedTest(sf::Vector2f mousepos)
+bool sd::RadioButton::PressedTest(sf::Vector2f mousepos)
 {
 	if (_enabled && _visible)
 	{
@@ -219,7 +227,8 @@ bool sd::Button::PressedTest(sf::Vector2f mousepos)
 		{
 			_waspressed = true;
 			_state = true;
-			_bgpic.SetColor(_pressedcolor);
+			_bgpicoff.SetColor(_pressedcolor);
+			_bgpicon.SetColor(_pressedcolor);
 		}
 	}
 	if (_state)
@@ -227,7 +236,7 @@ bool sd::Button::PressedTest(sf::Vector2f mousepos)
 	return false;
 }
 
-bool sd::Button::DownTest(sf::Vector2f mousepos)
+bool sd::RadioButton::DownTest(sf::Vector2f mousepos)
 {
 	if (_waspressed)
 	{
@@ -239,7 +248,8 @@ bool sd::Button::DownTest(sf::Vector2f mousepos)
 				if (!_state)
 				{
 					_state = true;
-					_bgpic.SetColor(_pressedcolor);
+					_bgpicoff.SetColor(_pressedcolor);
+					_bgpicon.SetColor(_pressedcolor);
 				}
 			}
 			else
@@ -247,7 +257,8 @@ bool sd::Button::DownTest(sf::Vector2f mousepos)
 				if (_state)
 				{
 					_state = false;
-					_bgpic.SetColor(sf::Color::White);
+					_bgpicoff.SetColor(sf::Color::White);
+					_bgpicon.SetColor(sf::Color::White);
 				}
 			}
 		}
@@ -262,18 +273,18 @@ bool sd::Button::DownTest(sf::Vector2f mousepos)
 	return false;
 }
 
-bool sd::Button::ReleasedTest(sf::Vector2f mousepos)
+bool sd::RadioButton::ReleasedTest(sf::Vector2f mousepos)
 {
 	if (_waspressed)
 	{
 		_waspressed = false;
 		if (_enabled && _visible)
 		{
-			_bgpic.SetColor(sf::Color::White);
+			_bgpicoff.SetColor(sf::Color::White);
+			_bgpicon.SetColor(sf::Color::White);
 			if (_state)
 			{
 				_state = false;
-				_ishit = true;
 				return true;
 			}
 		}
@@ -286,40 +297,28 @@ bool sd::Button::ReleasedTest(sf::Vector2f mousepos)
 }
 
 
-bool sd::Button::IsHit()
-{
-	if (!_ishit)
-		return false;
-	_ishit = false;
-	return true;
-}
-
-bool sd::Button::IsDown() const
-{
-	return _state;
-}
-
-
-bool sd::Button::IsEnabled()
+bool sd::RadioButton::IsEnabled()
 { return _enabled; }
 
-void sd::Button::SetEnabled(bool enabled)
+void sd::RadioButton::SetEnabled(bool enabled)
 {
 	_enabled = enabled;
 	if (_enabled)
 	{
-		_bgpic.SetColor(sf::Color::White);
+		_bgpicoff.SetColor(sf::Color::White);
+		_bgpicon.SetColor(sf::Color::White);
 		_text.setColor(sf::Color::Black);
 	}
 	else
 	{
-		_bgpic.SetColor(_disabledcolor);
+		_bgpicoff.SetColor(_disabledcolor);
+		_bgpicon.SetColor(_disabledcolor);
 		_text.setColor(_disabledtextcolor);
 	}
 }
 
-bool sd::Button::IsVisible()
+bool sd::RadioButton::IsVisible()
 { return _visible; }
 
-void sd::Button::SetVisible(bool visible)
+void sd::RadioButton::SetVisible(bool visible)
 { _visible = visible; }

@@ -1,5 +1,5 @@
-#ifndef CBUTTON_H
-#define CBUTTON_H
+#ifndef CRADIOBUTTON_H
+#define CRADIOBUTTON_H
 
 #include <SFML/Graphics.hpp>
 
@@ -13,16 +13,16 @@
 namespace sd
 {
 
-class Button : public Control
+class RadioButton : public Control
 {
 private:
-	static sd::Picture _basepic; //default picture, if not given another
+	static sd::Picture _basepicoff; //default picture, if not given another
+	static sd::Picture _basepicon;
 	static sf::Font _basefont; //so font
 	
 	bool _initok; //initialization completed
 	bool _waspressed; //when mouse pressed
 	bool _state; //when was pressed and mouse in button. need for result when released
-	bool _ishit; //resets to false after IsHit()
 	
 	sf::String _str; //text on button
 	sf::Text _text; //like sprite
@@ -33,7 +33,8 @@ private:
 	
 	sf::Font _font; //font == basefont, if not set
 	
-	sd::Picture _bgpic; //so background picture
+	sd::Picture _bgpicoff; //so background picture
+	sd::Picture _bgpicon; //TODO: mb as array? so enum State { off=0, on };
 	
 	sf::Color _pressedcolor; //sprite color when button pressed
 	sf::Color _disabledcolor; //sprite color when button disabled
@@ -54,26 +55,29 @@ public:
 	Type GetType() const;
 	
 	//empty ctor, initok = false;
-	Button();
+	RadioButton();
 	
 	//init
-	Button(const sf::String& str, const sf::Vector2f& pos);
+	RadioButton(const sf::String& str, const sf::Vector2f& pos);
 
-	Button(const sf::String& str, const sf::Vector2f& pos, const sf::Font& font, const sd::Picture& pic);
+	RadioButton(const sf::String& str, const sf::Vector2f& pos,
+	const sf::Font& font, const sd::Picture& picoff, const sd::Picture& picon);
 	
-	Button(const Button& src);
+	RadioButton(const RadioButton& src);
 	
 	//for init after empty ctor
-	Button& operator = (const Button& src);
+	RadioButton& operator = (const RadioButton& src);
 	
 	
 	//init static vars. New vars applies to objects creted after setting it
-	static void SetBasePicture(const sd::Picture& pic);
+	static void SetBaseOffPicture(const sd::Picture& pic);
+	static void SetBaseOnPicture(const sd::Picture& pic);
 	
 	static void SetBaseFont(const sf::Font& font);
 	
 	
-	void SetPicture(sd::Picture pic, bool savesize = true);
+	void SetOffPicture(sd::Picture pic, bool savesize = true); //maybe remove savesize option
+	void SetOnPicture(sd::Picture pic, bool savesize = true);
 	
 	
 	//sets var _pos. takes/returns coord of left top corner; _pos - centre of button
@@ -102,11 +106,6 @@ public:
 	bool DownTest(sf::Vector2f mousepos);
 	
 	bool ReleasedTest(sf::Vector2f mousepos);
-	
-	
-	bool IsHit();
-	
-	bool IsDown() const;
 	
 	
 	bool IsEnabled();

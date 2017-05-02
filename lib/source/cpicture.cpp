@@ -113,6 +113,15 @@ sd::Picture& sd::Picture::operator = (const Picture& src)
 	return *this;
 }
 
+
+bool sd::Picture::IsInit() const
+{ return initok; }
+
+
+sf::Image sd::Picture::GetImage() const
+{ return _image; }
+
+
 float sd::Picture::GetRotation() const
 { return _sprite.getRotation(); }
 
@@ -149,13 +158,12 @@ sf::Color sd::Picture::GetColor() const
 void sd::Picture::SetColor(const sf::Color& clr)
 { _sprite.setColor(clr); }
 
+
+
 void sd::Picture::Draw(float x, float y, sf::RenderWindow& targetwindow)
 {
 	if (!initok)
-	{
-		//log
-		return;
-	}
+	{ return; }
 	_sprite.setPosition(x,y);
 	targetwindow.draw(_sprite);
 }
@@ -163,12 +171,26 @@ void sd::Picture::Draw(float x, float y, sf::RenderWindow& targetwindow)
 void sd::Picture::Draw(const sf::Vector2f& pos, sf::RenderWindow& targetwindow)
 {
 	if (!initok)
-	{
-		//log
-		return;
-	}
+	{ return; }
 	Draw(pos.x, pos.y, targetwindow);
 }
+
+void sd::Picture::Draw(float x, float y, sf::RenderWindow& targetwindow, sf::Shader* shader)
+{
+	if (!initok)
+	{ return; }
+	_sprite.setPosition(x,y);
+	targetwindow.draw(_sprite, shader);
+}
+
+void sd::Picture::Draw(const sf::Vector2f& pos, sf::RenderWindow& targetwindow, sf::Shader* shader)
+{
+	if (!initok)
+	{ return; }
+	Draw(pos.x, pos.y, targetwindow, shader);
+}
+
+
 
 sf::Vector2f sd::Picture::GetLocalSize() const
 {

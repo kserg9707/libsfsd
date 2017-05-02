@@ -3,7 +3,6 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 
-//#include "../headers/vcontrol.h"
 //#include "../lib/headers/vcontrol.h"
 //#include "../lib/headers/sbasevalues.h"
 //#include "../lib/headers/eaction.h"
@@ -11,7 +10,7 @@
 //#include "../lib/headers/cbutton.h"
 //#include "../lib/headers/cslide.h"
 //#include "../lib/headers/cmessagebox.h"
-//#include "../headers/cglyphtext.h" not needed for now
+//#include "../lib/headers/cglyphtext.h" not needed for now
 #include "../lib/headers/Controls.hpp"
 
 sf::RenderWindow* mainwindow; //main window of the program

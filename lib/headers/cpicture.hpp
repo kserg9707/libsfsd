@@ -19,6 +19,9 @@ private:
 	sf::Vector2u _size; //size of texture
 	sf::Vector2f _fsize; //size of one frame
 	
+	int frame;
+	bool mirrored;
+	
 	//load image from file. center origin, mask color if needed
 	void _LoadImage(bool centrepivot, const sf::Color& maskclr, bool mask);
 	
@@ -44,6 +47,12 @@ public:
 	//for init after empty ctor
 	Picture& operator = (const Picture& src);
 	
+	//is initialized?
+	bool IsInit() const;
+	
+	//get image
+	sf::Image GetImage() const;
+
 	//same to sf::Sprite, simply calling it
 	float GetRotation() const;
 	
@@ -75,6 +84,11 @@ public:
 	void Draw(float x, float y, sf::RenderWindow& targetwindow);
 	
 	void Draw(const sf::Vector2f& pos, sf::RenderWindow& targetwindow);
+	
+	//draw with shader
+	void Draw(float x, float y, sf::RenderWindow& targetwindow, sf::Shader* shader);
+	
+	void Draw(const sf::Vector2f& pos, sf::RenderWindow& targetwindow, sf::Shader* shader);
 	
 	//get frame size
 	sf::Vector2f GetLocalSize() const;

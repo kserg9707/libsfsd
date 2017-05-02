@@ -27,6 +27,8 @@ private:
 	
 	static std::vector<sf::Image> _images;
 	static sd::Picture _picturebutton;
+	static sd::Picture _pictureradiobuttonoff;
+	static sd::Picture _pictureradiobuttonon;
 	static sd::Picture _picturesliderail;
 	static sd::Picture _pictureslidebutton;
 	
@@ -51,10 +53,11 @@ public:
 	static const sf::Font& Font;
 	
 	static const sd::Picture& PictureButton;
+	static const sd::Picture& PictureRadioButtonOff;
+	static const sd::Picture& PictureRadioButtonOn;
 	static const sd::Picture& PictureSlideRail;
 	static const sd::Picture& PictureSlideButton;
 	//static const sf::Image& ImageCheckBox;
-	//static const sf::Image& ImageRadioButton;
 	
 	static int Init(char** env);
 };
